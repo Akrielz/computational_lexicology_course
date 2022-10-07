@@ -23,4 +23,5 @@ There was no task for Lab 1
 
 ### Task
 
-...
+Make a Tokenizer that considers many rules, for the Romanian Language. 
+The rules are described in details in the `lab2/assignment.pdf` file.
