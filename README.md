@@ -1,4 +1,4 @@
-# Computation Lexicology Course
+# Computational Lexicology Course
 
 ## Table of Contents
 
