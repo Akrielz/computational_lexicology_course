@@ -50,10 +50,6 @@ def parse_web_url(split_words: List[str]):
     return split_words
 
 
-def my_func():
-    pass
-
-
 def parse_ip(split_words: List[str]):
     # iterate through the words and find emails
     i = 0
