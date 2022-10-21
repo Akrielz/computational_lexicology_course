@@ -145,3 +145,6 @@ dmypy.json
 .idea/*
 
 *.rar
+
+data/
+data/*
