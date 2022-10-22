@@ -58,7 +58,7 @@ if __name__ == "__main__":
     labels = df['label_sexist'].values
 
     # balance the data
-    balanced_df_indices = balance_data_indices(df, labels)
+    balanced_df_indices = balance_data_indices(labels)
     balanced_df = df.iloc[balanced_df_indices]
 
     # print the shape
