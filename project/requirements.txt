@@ -1,0 +1,7 @@
+numpy
+pandas
+nltk
+transformers[pytorch]
+pytorch
+pytorch-lightning
+detoxify
