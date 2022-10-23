@@ -50,7 +50,7 @@ def do_one_epoch(
     progress_bar = tqdm(data_loader)
 
     # iterate the data loader
-    for batch_indices in data_loader.iter_indices_batches():
+    for batch_indices in data_loader.iter_batch_indices():
         # get targets
         targets = data_loader.df.iloc[batch_indices]["label_sexist"].values
         targets = torch.tensor([1 if target == "sexist" else 0 for target in targets])

@@ -58,7 +58,7 @@ class DataLoader:
 
         return len_iters
 
-    def iter_indices_batches(self):
+    def iter_batch_indices(self):
         if self.shuffle:
             np.random.shuffle(self.indices)
 
@@ -66,7 +66,7 @@ class DataLoader:
             yield self.indices[i:i + self.batch_size]
 
     def __iter__(self):
-        for batch_indices in self.iter_indices_batches():
+        for batch_indices in self.iter_batch_indices():
             yield self.df.iloc[batch_indices]
 
 
