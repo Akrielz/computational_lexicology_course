@@ -27,7 +27,8 @@ class ToxicBertEncoder(nn.Module):
         if not return_attention_mask_too:
             return encoding
 
-        return encoding, tokenized["attention_mask"]
+        attention_mask = tokenized["attention_mask"].bool()
+        return encoding, attention_mask
 
     def output_dim(self):
         return self.bert_model.config.hidden_size
@@ -36,4 +37,4 @@ class ToxicBertEncoder(nn.Module):
 if __name__ == "__main__":
     toxic_bert_encoder = ToxicBertEncoder()
     encoding = toxic_bert_encoder(["hello world!"])
-    print(encoding)
+    print(encoding.shape)

@@ -1,16 +1,20 @@
-from typing import Optional, Callable, Literal, List
+from typing import Optional, Callable, Literal, List, Union, Tuple
 
+import torch
 from torch import nn
+from tqdm import tqdm
 from vision_models_playground.components.attention import TransformerEncoder, FeedForward
 
 from project.models.average_reducer import AverageReducer
+from project.models.bert_pooler import BertPooler
+from project.pipeline.data_loader import DataLoader
 from project.task_a.toxic_bert_encoder import ToxicBertEncoder
 
 
 class SexistBert(nn.Module):
     def __init__(
             self,
-            detoxify_model: str = "original",
+            detoxify_model: Optional[str] = "original",
             depth: int = 2,
             apply_rotary_emb: bool = True,
             activation: Optional[Callable] = None,
@@ -18,11 +22,22 @@ class SexistBert(nn.Module):
             norm_type: Literal['pre_norm', 'post_norm'] = "pre_norm",
             num_classes: int = 2,
             device: str = "cpu",
+            pool_method: Literal['average', 'bert'] = "average",
     ):
         super(SexistBert, self).__init__()
-        self.toxic_bert_encoder = ToxicBertEncoder(detoxify_model, device)
+
+        detoxify_model_name = detoxify_model
+        if detoxify_model is None:
+            detoxify_model_name = "original"
+
+        self.toxic_bert_encoder = ToxicBertEncoder(detoxify_model_name, device)
 
         config = self.toxic_bert_encoder.bert_model.config
+
+        if detoxify_model is None:
+            del self.toxic_bert_encoder
+            self.toxic_bert_encoder = None
+
         dim = config.hidden_size
         heads = config.num_attention_heads
         dim_head = dim // heads
@@ -47,7 +62,14 @@ class SexistBert(nn.Module):
             norm_type=norm_type
         )
 
-        self.average_reducer = AverageReducer()
+        self.pool_method = pool_method
+        if pool_method == "average":
+            self.pool = AverageReducer()
+        elif pool_method == "bert":
+            self.pool = BertPooler(dim)
+        else:
+            raise ValueError(f"Unknown pool method: {pool_method}")
+
         self.classifier = nn.Sequential(
             nn.LayerNorm(dim),
             FeedForward(
@@ -59,22 +81,42 @@ class SexistBert(nn.Module):
             )
         )
 
-    def forward(self, text: List[str], return_embeddings: bool = False):
-        embeddings, attention_mask = self.toxic_bert_encoder(text, return_attention_mask_too=True)
-        attention_mask = attention_mask.bool()
+    def forward(self, inputs: Union[str, List[str], Tuple], return_embeddings: bool = False):
+        if isinstance(inputs, str) or (isinstance(inputs, list) and isinstance(inputs[0], str)):
+            if self.toxic_bert_encoder is None:
+                raise ValueError("You must specify detoxify_model when passing strings as input.")
+
+            with torch.no_grad():
+                embeddings, attention_mask = self.toxic_bert_encoder(inputs, return_attention_mask_too=True)
+        else:
+            embeddings, attention_mask = inputs
+
+        return self.forward_tensor(embeddings, attention_mask, return_embeddings)
+
+    def forward_tensor(
+            self,
+            embeddings: torch.Tensor,
+            attention_mask: torch.Tensor,
+            return_embeddings: bool = False
+    ):
         embeddings = self.transformer(embeddings, mask=attention_mask)
 
         if return_embeddings:
             return embeddings
 
-        embeddings = self.average_reducer(embeddings, attention_mask)
+        if self.pool_method == "average":
+            embeddings = self.pool(embeddings, attention_mask)
+        else:
+            embeddings = self.pool(embeddings)
+
         logits = self.classifier(embeddings)
         return logits
 
 
 if __name__ == "__main__":
-    model = SexistBert(device="cuda").cuda()
+    model = SexistBert(device="cuda", num_classes=1, pool_method="bert").cuda()
 
-    sentences = ["Let's go to the beach!", "Let's do it!", "The beach is a nice place to go."]
-    logits = model(sentences)
-    print(logits)
+    data_loader = DataLoader(batch_size=16)
+    for batch in tqdm(data_loader):
+        text = list(batch['text'].values)
+        y = model(text, return_embeddings=True)
