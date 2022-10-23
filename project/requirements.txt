@@ -6,3 +6,5 @@ pytorch
 pytorch-lightning
 detoxify
 vision-models-playground
+scikit-learn
+seaborn
