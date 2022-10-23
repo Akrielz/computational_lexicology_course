@@ -2,13 +2,11 @@ from typing import Optional, Callable, Literal, List, Union, Tuple
 
 import torch
 from torch import nn
-from tqdm import tqdm
 from vision_models_playground.components.attention import TransformerEncoder, FeedForward
 
 from project.models.average_reducer import AverageReducer
 from project.models.bert_pooler import BertPooler
-from project.pipeline.data_loader import DataLoader
-from project.task_a.toxic_bert_encoder import ToxicBertEncoder
+from project.models.toxic_bert_encoder import ToxicBertEncoder
 
 
 class SexistBert(nn.Module):
