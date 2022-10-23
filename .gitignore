@@ -148,3 +148,9 @@ dmypy.json
 
 data/
 data/*
+
+*.pt
+*.ckpt
+
+trained_agents/
+trained_agents/*
