@@ -101,7 +101,7 @@ def train(num_epochs: int):
     )
 
     # read project/task_a/toxic_bert_results.pickle
-    with open("toxic_bert_results.pickle", "rb") as f:
+    with open("../cached/toxic_bert_results.pickle", "rb") as f:
         features = pickle.load(f)
         features = torch.tensor(list(features.values()))
         features = rearrange(features, "f n -> n f")
