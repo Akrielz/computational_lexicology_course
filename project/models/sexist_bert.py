@@ -114,9 +114,7 @@ class SexistBert(nn.Module):
 
 
 if __name__ == "__main__":
-    model = SexistBert(device="cuda", num_classes=1, pool_method="bert").cuda()
+    model = SexistBert(device="cuda", num_classes=1, pool_method="bert", depth=2).cuda()
 
-    data_loader = DataLoader(batch_size=16)
-    for batch in tqdm(data_loader):
-        text = list(batch['text'].values)
-        y = model(text, return_embeddings=True)
+    # print number of params
+    print(sum(p.numel() for p in model.parameters()))
