@@ -155,5 +155,5 @@ data/*
 trained_agents/
 trained_agents/*
 
-cached/
-cached/*
+project/cached/
+project/cached/*
