@@ -5,14 +5,15 @@ from einops import rearrange
 from torch import nn
 from torchmetrics.classification import BinaryAccuracy
 from tqdm import tqdm
+from transformers import AutoModelForSequenceClassification
 
-from project.models.sexist_bert import SexistBert
+from project.pipeline.classic_tokenizers import get_bert_tokenizer
 from project.pipeline.data_loader import DataLoader
 
 
 def build_model(model_path: Optional[str] = None) -> nn.Module:
     # create model
-    model = SexistBert(device="cuda", num_classes=1, pool_method="bert", depth=0).cuda()
+    model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=1)
 
     # load the model
     if model_path is not None:
@@ -27,9 +28,11 @@ def do_one_epoch(
         data_loader: DataLoader,
         optimizer: torch.optim.Optimizer,
         loss_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
+        tokenizer
 ):
     # set model to train mode
     model.train()
+    model.to("cuda")
 
     # init binary accuracy metric
     binary_accuracy = BinaryAccuracy().to("cuda")
@@ -47,9 +50,11 @@ def do_one_epoch(
 
         # get input
         inputs = list(batch["text"].values)
+        inputs = tokenizer(inputs, padding=True, truncation=True, return_tensors="pt")
+        inputs.to("cuda")
 
         # use the model
-        outputs = model(inputs)
+        outputs = model(**inputs)[0]
         outputs = torch.sigmoid(outputs)
         outputs = rearrange(outputs, "b 1 -> b")
 
@@ -75,7 +80,7 @@ def do_one_epoch(
         progress_bar.update(1)
 
     # save the model
-    torch.save(model.state_dict(), "../trained_agents/sexist_bert_a.pt")
+    torch.save(model.state_dict(), "../trained_agents/uncased_bert_a.pt")
 
 
 def train(num_epochs: int):
@@ -91,11 +96,14 @@ def train(num_epochs: int):
     # create model
     model = build_model()
 
+    # get tokenizer
+    tokenizer = get_bert_tokenizer()
+
     # get the loss function
     loss_function = nn.BCELoss()
 
     # get the optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.002)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
 
     # create lr scheduler
     lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.995)
@@ -107,6 +115,7 @@ def train(num_epochs: int):
             data_loader=data_loader,
             optimizer=optimizer,
             loss_function=loss_function,
+            tokenizer=tokenizer,
         )
         lr_scheduler.step()
 

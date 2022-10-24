@@ -123,4 +123,5 @@ if __name__ == "__main__":
     for batch in tqdm(data_loader):
         text = list(batch['text'].values)
         y = model(text)
+        break
 
