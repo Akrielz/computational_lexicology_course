@@ -9,3 +9,4 @@ vision-models-playground
 scikit-learn
 seaborn
 ipywidgets
+notebook

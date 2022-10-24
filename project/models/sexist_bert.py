@@ -2,11 +2,13 @@ from typing import Optional, Callable, Literal, List, Union, Tuple
 
 import torch
 from torch import nn
+from tqdm import tqdm
 from vision_models_playground.components.attention import TransformerEncoder, FeedForward
 
 from project.models.average_reducer import AverageReducer
 from project.models.bert_pooler import BertPooler
 from project.models.toxic_bert_encoder import ToxicBertEncoder
+from project.pipeline.data_loader import DataLoader
 
 
 class SexistBert(nn.Module):
@@ -58,7 +60,7 @@ class SexistBert(nn.Module):
             activation=activation,
             drop_path=drop_path,
             norm_type=norm_type
-        )
+        ) if depth > 0 else nn.Identity()
 
         self.pool_method = pool_method
         if pool_method == "average":
@@ -116,3 +118,9 @@ if __name__ == "__main__":
 
     # print number of params
     print(sum(p.numel() for p in model.parameters()))
+
+    data_loader = DataLoader(batch_size=16, balance_data_method="none")
+    for batch in tqdm(data_loader):
+        text = list(batch['text'].values)
+        y = model(text)
+

@@ -12,7 +12,7 @@ from project.pipeline.data_loader import DataLoader
 
 def build_model(model_path: Optional[str] = None) -> nn.Module:
     # create model
-    model = SexistBert(device="cuda", num_classes=1, pool_method="bert", depth=2).cuda()
+    model = SexistBert(device="cuda", num_classes=1, pool_method="bert", depth=0).cuda()
 
     # load the model
     if model_path is not None:
@@ -95,10 +95,10 @@ def train(num_epochs: int):
     loss_function = nn.BCELoss()
 
     # get the optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.002)
 
     # create lr scheduler
-    lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
+    lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.995)
 
     # iterate the epochs
     for epoch in range(num_epochs):
@@ -112,4 +112,4 @@ def train(num_epochs: int):
 
 
 if __name__ == "__main__":
-    train(num_epochs=1)
+    train(num_epochs=1000)
