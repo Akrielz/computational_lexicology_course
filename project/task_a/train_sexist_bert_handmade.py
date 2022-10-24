@@ -6,7 +6,7 @@ from torch import nn
 from torchmetrics.classification import BinaryAccuracy
 from tqdm import tqdm
 
-from project.models.sexist_bert import SexistBert
+from project.models.sexist_bert_handmade import SexistBert
 from project.pipeline.data_loader import DataLoader
 
 
@@ -75,7 +75,7 @@ def do_one_epoch(
         progress_bar.update(1)
 
     # save the model
-    torch.save(model.state_dict(), "../trained_agents/sexist_bert_a.pt")
+    torch.save(model.state_dict(), "../trained_agents/sexist_bert_handmade_a.pt")
 
 
 def train(num_epochs: int):

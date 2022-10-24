@@ -80,7 +80,7 @@ def do_one_epoch(
         progress_bar.update(1)
 
     # save the model
-    torch.save(model.state_dict(), "../trained_agents/uncased_bert_a.pt")
+    torch.save(model.state_dict(), "../trained_agents/sexist_bert_a_pretrained.pt")
 
 
 def train(num_epochs: int):
