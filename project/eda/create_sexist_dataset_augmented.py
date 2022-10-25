@@ -1,4 +1,5 @@
 import pandas as pd
+from tqdm import tqdm
 
 from project.pipeline.augmenter import TextAugmenter
 
@@ -12,9 +13,9 @@ def create_sexist_dataset_augmented():
 
     # augment the dataset
     all_dfs = []
-    for method in text_augmenter.augmentation_methods:
+    for method in tqdm(text_augmenter.augmentation_methods):
         df_augmented = df_original.copy()
-        df_augmented["comment_text"] = df_augmented["comment_text"].apply(
+        df_augmented["text"] = df_augmented["text"].apply(
             lambda x: text_augmenter(x, method=method)
         )
         all_dfs.append(df_augmented)
