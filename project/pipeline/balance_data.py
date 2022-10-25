@@ -100,7 +100,7 @@ def balance_data_indices_duplication(
 
 if __name__ == "__main__":
     # load the data
-    data_path = "../data/train_all_tasks.csv"
+    data_path = "../data/train_sexism.csv"
     df = pd.read_csv(data_path)
 
     # print the counts

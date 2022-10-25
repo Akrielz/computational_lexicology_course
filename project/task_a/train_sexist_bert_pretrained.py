@@ -80,12 +80,13 @@ def do_one_epoch(
         progress_bar.update(1)
 
     # save the model
-    torch.save(model.state_dict(), "../trained_agents/sexist_bert_a_pretrained.pt")
+    torch.save(model.state_dict(), "../trained_agents/sexist_bert_pretrained_a_extended.pt")
 
 
 def train(num_epochs: int):
     # get the data loader
     data_loader = DataLoader(
+        data_path="../data/train_sexism.csv",
         batch_size=16,
         shuffle=True,
         seed=42,

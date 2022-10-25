@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ class DataLoader:
             shuffle: bool = False,
             seed: int = 42,
             balance_data_method: Literal["reduction", "duplication", "none"] = "none",
-            task_column_name: str = "label_sexist",
+            task_column_name: Optional[str] = "label_sexist",
     ):
         # save vars
         self.data_path = data_path
@@ -35,6 +35,10 @@ class DataLoader:
         self.indices = self._prepare_indices()
 
     def _prepare_indices(self) -> np.ndarray:
+        if self.task_column_name is None:
+            indices = np.arange(len(self.df))
+            return indices
+
         # get the labels
         labels = self.df[self.task_column_name].values
 
