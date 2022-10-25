@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def create_extended_sexist_dataset():
+def create_sexist_dataset_extended():
     # load the original dataset
     df_original = pd.read_csv("../data/train_all_tasks.csv")
 
@@ -25,4 +25,4 @@ def create_extended_sexist_dataset():
 
 
 if __name__ == "__main__":
-    create_extended_sexist_dataset()
+    create_sexist_dataset_extended()

@@ -16,6 +16,14 @@ def load_teda() -> EDA:
     return EDA()
 
 
+def load_translator():
+    return Translator()
+
+
+def load_context_aug():
+    return naw.ContextualWordEmbsAug(model_path='bert-base-uncased', action="substitute")
+
+
 def synonym_replacement_augmentation(text: str, teda: EDA) -> str:
     """
     :return: randomly replace words with their synonyms in order to help it generalize
@@ -76,7 +84,7 @@ def translation_augmentation(text: str, translator, src="en") -> str:
 
 
 def main():
-    text = "Hi everyone! Did you enjoy the show from last night? UwU Emojies :) ;( Bad typing, lololol"
+    text = "Hi everyone! Did you enjoy the show from last night? :D"
     print("Original text: \n", text)
 
     teda = load_teda()
