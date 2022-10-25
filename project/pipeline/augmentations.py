@@ -3,11 +3,6 @@ from textaugment import Wordnet, EDA
 import nlpaug.augmenter.word as naw
 
 
-def translate_text(texts, source_language, target_language, translator):
-    translated_texts = translator.translate(texts, dest=target_language, src=source_language).text
-    return translated_texts
-
-
 def load_wordnet(v=False, n=True, p=0.5) -> Wordnet:
     return Wordnet(v=v, n=n, p=p)
 
@@ -16,12 +11,20 @@ def load_teda() -> EDA:
     return EDA()
 
 
-def load_translator():
-    return Translator()
+def load_back_translator(device: str = "cpu") -> naw.BackTranslationAug:
+    return naw.BackTranslationAug(
+        from_model_name='facebook/wmt19-en-de',
+        to_model_name='facebook/wmt19-de-en',
+        device=device
+    )
 
 
-def load_context_aug():
-    return naw.ContextualWordEmbsAug(model_path='bert-base-uncased', action="substitute")
+def load_context_aug(device="cpu") -> naw.ContextualWordEmbsAug:
+    return naw.ContextualWordEmbsAug(
+        model_path='bert-base-uncased',
+        action="substitute",
+        device=device
+    )
 
 
 def synonym_replacement_augmentation(text: str, teda: EDA) -> str:
@@ -69,18 +72,11 @@ def wordnet_augmentation(text: str, twordnet: Wordnet) -> str:
     return twordnet.augment(text)
 
 
-def translation_augmentation(text: str, translator, src="en") -> str:
+def translation_augmentation(text: str, back_translator_aug) -> str:
     """
     :return: the original text after a mirrored translation
     """
-    if src == "en":
-        dst = "fr"
-    else:
-        dst = "en"
-
-    translated = translate_text(text, src, dst, translator)
-    re_translated = translate_text(translated, dst, src, translator)
-    return re_translated
+    return back_translator_aug.augment(text)[0]
 
 
 def main():
@@ -88,17 +84,17 @@ def main():
     print("Original text: \n", text)
 
     teda = load_teda()
-    translator = Translator()
     twordnet = load_wordnet()
-    aug = naw.ContextualWordEmbsAug(model_path='bert-base-uncased', action="substitute")
+    context_aug = load_context_aug()
+    back_translation_aug = load_back_translator()
 
     print("\nsynonym_replacement_augmentation:\n", synonym_replacement_augmentation(text, teda))
     print("\nrandom_deletion_augmentation:\n", random_deletion_augmentation(text, 0.2, teda))
     print("\nrandom_swap_augmentation:\n", random_swap_augmentation(text, teda))
     print("\nrandom_insertion_augmentation:\n", random_insertion_augmentation(text, teda))
-    print("\ntranslation_augmentation:\n", translation_augmentation(text, translator))
+    print("\ntranslation_augmentation:\n", translation_augmentation(text, back_translation_aug))
     print("\nwordnet_augmentation:\n", wordnet_augmentation(text, twordnet))
-    print("\nword_context_augmentation:\n", word_context_augmentation(text, aug))
+    print("\nword_context_augmentation:\n", word_context_augmentation(text, context_aug))
 
 
 if __name__ == "__main__":

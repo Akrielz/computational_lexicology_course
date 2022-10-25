@@ -1,5 +1,4 @@
 import pandas as pd
-from tqdm import tqdm
 
 from project.pipeline.augmenter import TextAugmenter
 
@@ -9,14 +8,15 @@ def create_sexist_dataset_augmented():
     df_original = pd.read_csv("../data/train_sexism.csv")
 
     # load augmenter
-    text_augmenter = TextAugmenter()
+    text_augmenter = TextAugmenter(device="cuda")
 
     # augment the dataset
     all_dfs = []
-    for method in tqdm(text_augmenter.augmentation_methods):
+    for method in text_augmenter.get_augmentation_methods("medium"):
+        print(f"Augmenting dataset with method: {method}")
         df_augmented = df_original.copy()
-        df_augmented["text"] = df_augmented["text"].apply(
-            lambda x: text_augmenter(x, method=method)
+        df_augmented["text"] = text_augmenter(
+            df_augmented["text"].values, method=method, progress_bar=True
         )
         all_dfs.append(df_augmented)
 

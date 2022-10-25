@@ -10,3 +10,8 @@ scikit-learn
 seaborn
 ipywidgets
 notebook
+googletrans==4.0.0rc1
+textaugment
+nlpaug
+sentencepiece
+sacremoses
