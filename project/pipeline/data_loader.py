@@ -10,7 +10,7 @@ from project.pipeline.balance_data import balance_data_indices_reduction, balanc
 class DataLoader:
     def __init__(
             self,
-            data_path: str = "../data/train_all_tasks.csv",
+            data_path: str = "../data/semeval/train_all_tasks.csv",
             batch_size: int = 4,
             shuffle: bool = False,
             seed: int = 42,

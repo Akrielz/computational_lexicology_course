@@ -34,7 +34,7 @@ def process_compliments():
 
 def process_conv_abuse():
     # load the dataset
-    df = pd.read_csv("project/data/conv_abuse/conv_abuse_emnlp_full.csv")
+    df = pd.read_csv("../data/conv_abuse/conv_abuse_emnlp_full.csv")
 
     # keep only the columns "text" and "label"
     df = df[["text", "label"]]

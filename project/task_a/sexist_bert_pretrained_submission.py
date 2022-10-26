@@ -50,7 +50,7 @@ def create_submission():
     df = pd.DataFrame({"rewire_id": rewire_id, "label_pred": predictions})
 
     # save the dataframe
-    df.to_csv("../data/submission_task_a/dev/sexist_bert_extend_e2.csv", index=False)
+    df.to_csv("../data/semeval/submission_task_a/dev/sexist_bert_extend_e2.csv", index=False)
 
 
 if __name__ == "__main__":

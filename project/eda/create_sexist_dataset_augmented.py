@@ -5,7 +5,7 @@ from project.pipeline.augmenter import TextAugmenter
 
 def create_sexist_dataset_augmented():
     # load the original dataset
-    df_original = pd.read_csv("../data/train_sexism.csv")
+    df_original = pd.read_csv("../data/custom/train_sexism.csv")
 
     # load augmenter
     text_augmenter = TextAugmenter(device="cuda")
@@ -24,7 +24,7 @@ def create_sexist_dataset_augmented():
     df = pd.concat(all_dfs, ignore_index=True)
 
     # save the dataframe as csv
-    df.to_csv("../data/train_sexism_augmented.csv", index=False)
+    df.to_csv("../data/custom/train_sexism_augmented.csv", index=False)
 
 
 if __name__ == "__main__":
