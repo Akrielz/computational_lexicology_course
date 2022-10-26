@@ -48,9 +48,6 @@ def process_exist_test():
     # remap the "non-sexist" to "not sexist
     df["label_sexist"] = df["label_sexist"].map({"non-sexist": "not sexist", "sexist": "sexist"})
 
-    # replace any @user with [USER]
-    df["text"] = df["text"].str.replace("@\w+", "[USER]")
-
     return df
 
 
@@ -69,9 +66,6 @@ def process_exist_train():
 
     # remap the "non-sexist" to "not sexist
     df["label_sexist"] = df["label_sexist"].map({"non-sexist": "not sexist", "sexist": "sexist"})
-
-    # replace any @user with [USER]
-    df["text"] = df["text"].str.replace("@\w+", "[USER]")
 
     return df
 
@@ -92,9 +86,6 @@ def process_twitter_analysis_train():
 
     # remap the 0 to "not sexist" and 1 to "sexist"
     df["label_sexist"] = df["label_sexist"].map({0: "not sexist", 1: "sexist"})
-
-    # replace any @user with [USER]
-    df["text"] = df["text"].str.replace("@\w+", "[USER]")
 
     return df
 
@@ -126,6 +117,14 @@ def create_sexist_dataset_extended():
 
     # concatenate the dataframes
     df = pd.concat(df_list)
+
+    # replace any @user with [USER]
+    df["text"] = df["text"].str.replace("@\w+", "[USER]", regex=True)
+
+    # replace all urls with [URL]
+    df["text"] = df["text"].str.replace("http\S+", "[URL]", regex=True)
+    df["text"] = df["text"].str.replace("https\S+", "[URL]", regex=True)
+    df["text"] = df["text"].str.replace("www\S+", "[URL]", regex=True)
 
     # drop duplicates
     df = df.drop_duplicates()
