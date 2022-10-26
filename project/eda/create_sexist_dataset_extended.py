@@ -116,7 +116,7 @@ def create_sexist_dataset_extended():
     df_list = [df_original, df_csmb, df_exist_test, df_exist_train, df_twitter_analysis_train, df_workplace]
 
     # concatenate the dataframes
-    df = pd.concat(df_list)
+    df = pd.concat(df_list, ignore_index=True)
 
     # replace any @user with [USER]
     df["text"] = df["text"].str.replace("@\w+", "[USER]", regex=True)
@@ -128,6 +128,9 @@ def create_sexist_dataset_extended():
 
     # drop duplicates
     df = df.drop_duplicates()
+
+    # keep only the rows with len(text) > 2
+    df = df[df["text"].str.len() > 2]
 
     # save the dataframe to csv
     df.to_csv("../data/custom/train_sexist.csv", index=False)
