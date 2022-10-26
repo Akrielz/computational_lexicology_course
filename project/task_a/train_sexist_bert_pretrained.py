@@ -28,7 +28,8 @@ def do_one_epoch(
         data_loader: DataLoader,
         optimizer: torch.optim.Optimizer,
         loss_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
-        tokenizer
+        tokenizer,
+        epoch_num: int
 ):
     # set model to train mode
     model.train()
@@ -80,17 +81,17 @@ def do_one_epoch(
         progress_bar.update(1)
 
     # save the model
-    torch.save(model.state_dict(), "../trained_agents/sexist_bert_pretrained_a_extended.pt")
+    torch.save(model.state_dict(), f"../trained_agents/sexist_bert_pretrained_a_custom_full_r_e{epoch_num+1}.pt")
 
 
 def train(num_epochs: int):
     # get the data loader
     data_loader = DataLoader(
-        data_path="../data/semeval/train_sexism.csv",
+        data_path="../data/custom/train_sexist.csv",
         batch_size=16,
         shuffle=True,
         seed=42,
-        balance_data_method="duplication",
+        balance_data_method="reduction",
         task_column_name="label_sexist",
     )
 
@@ -117,9 +118,10 @@ def train(num_epochs: int):
             optimizer=optimizer,
             loss_function=loss_function,
             tokenizer=tokenizer,
+            epoch_num=epoch
         )
         lr_scheduler.step()
 
 
 if __name__ == "__main__":
-    train(num_epochs=1000)
+    train(num_epochs=4)
