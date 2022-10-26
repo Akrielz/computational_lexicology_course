@@ -15,3 +15,5 @@ textaugment
 nlpaug
 sentencepiece
 sacremoses
+dotenv
+tweepy

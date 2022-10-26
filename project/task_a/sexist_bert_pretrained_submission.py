@@ -20,7 +20,7 @@ def create_submission():
     # get the data loader
     data_loader = DataLoader(
         batch_size=16,
-        data_path="../data/dev_task_a_entries.csv",
+        data_path="../data/semeval/dev_task_a_entries.csv",
         shuffle=False,
         task_column_name=None,
     )

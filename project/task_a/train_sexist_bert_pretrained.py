@@ -86,7 +86,7 @@ def do_one_epoch(
 def train(num_epochs: int):
     # get the data loader
     data_loader = DataLoader(
-        data_path="../data/train_sexism.csv",
+        data_path="../data/semeval/train_sexism.csv",
         batch_size=16,
         shuffle=True,
         seed=42,
