@@ -17,3 +17,4 @@ sentencepiece
 sacremoses
 dotenv
 tweepy
+openpyxl
