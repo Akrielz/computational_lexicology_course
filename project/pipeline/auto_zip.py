@@ -19,4 +19,4 @@ for file in files:
         continue
 
     # zip the file
-    os.system(f"zip {file_path}.zip {file_path}.csv")
+    os.system(f"zip -j {file_path}.zip {file_path}.csv")

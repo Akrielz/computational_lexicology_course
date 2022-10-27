@@ -118,21 +118,17 @@ def process_workplace():
 
 def create_sexist_dataset_extended():
     # load the datasets
-    df_original = process_original()
-    df_csmb = process_csmb()
-    df_exist_test = process_exist_test()
-    df_exist_train = process_exist_train()
-    df_twitter_analysis_train = process_twitter_analysis_train()
-    df_workplace = process_workplace()
-    df_hate_speech = process_hate_speech()
-    df_compliments_benevolent = process_compliments_benevolent()
-    df_compliments_hostile = process_compliments_hostile()
+    df_list = []
 
-    # create the df list
-    df_list = [df_original, df_csmb, df_exist_test, df_exist_train, df_twitter_analysis_train, df_workplace,
-               df_hate_speech, df_compliments_benevolent, df_compliments_hostile]
-    # df_list = [df_original, df_csmb, df_exist_test, df_exist_train, df_workplace,
-    #            df_hate_speech, df_compliments_hostile]
+    # df_list.append(process_original())
+    df_list.append(process_csmb())
+    df_list.append(process_exist_test())
+    df_list.append(process_exist_train())
+    df_list.append(process_twitter_analysis_train())
+    df_list.append(process_workplace())
+    df_list.append(process_hate_speech())
+    df_list.append(process_compliments_benevolent())
+    df_list.append(process_compliments_hostile())
 
     # concatenate the dataframes
     df = pd.concat(df_list)

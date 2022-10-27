@@ -81,17 +81,25 @@ def do_one_epoch(
         progress_bar.update(1)
 
     # save the model
-    torch.save(model.state_dict(), f"../trained_agents/sexist_bert_pretrained_a_custom_full_r_e{epoch_num+1}.pt")
+    torch.save(model.state_dict(), f"../trained_agents/sexist_bert_pretrained_a_original_n_e{epoch_num+1}.pt")
 
 
 def train(num_epochs: int):
     # get the data loader
-    data_loader = DataLoader(
+    data_loader_extended = DataLoader(
         data_path="../data/custom/train_sexist.csv",
         batch_size=16,
         shuffle=True,
         seed=42,
-        balance_data_method="reduction",
+        balance_data_method="none",
+        task_column_name="label_sexist",
+    )
+
+    data_loader_original = DataLoader(
+        batch_size=16,
+        shuffle=True,
+        seed=42,
+        balance_data_method="none",
         task_column_name="label_sexist",
     )
 
@@ -111,10 +119,21 @@ def train(num_epochs: int):
     lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.995)
 
     # iterate the epochs
-    for epoch in range(num_epochs):
+    for epoch in range(2):
         do_one_epoch(
             model=model,
-            data_loader=data_loader,
+            data_loader=data_loader_extended,
+            optimizer=optimizer,
+            loss_function=loss_function,
+            tokenizer=tokenizer,
+            epoch_num=epoch
+        )
+        lr_scheduler.step()
+
+    for epoch in range(1):
+        do_one_epoch(
+            model=model,
+            data_loader=data_loader_original,
             optimizer=optimizer,
             loss_function=loss_function,
             tokenizer=tokenizer,
@@ -124,4 +143,4 @@ def train(num_epochs: int):
 
 
 if __name__ == "__main__":
-    train(num_epochs=4)
+    train(num_epochs=1)
