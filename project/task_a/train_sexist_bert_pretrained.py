@@ -3,7 +3,7 @@ from typing import Callable, Optional
 import torch
 from einops import rearrange
 from torch import nn
-from torchmetrics.classification import BinaryAccuracy
+from torchmetrics.classification import BinaryAccuracy, BinaryF1Score
 from tqdm import tqdm
 from transformers import AutoModelForSequenceClassification
 
@@ -29,7 +29,8 @@ def do_one_epoch(
         optimizer: torch.optim.Optimizer,
         loss_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
         tokenizer,
-        epoch_num: int
+        epoch_num: int,
+        save_model: bool = True,
 ):
     # set model to train mode
     model.train()
@@ -37,6 +38,9 @@ def do_one_epoch(
 
     # init binary accuracy metric
     binary_accuracy = BinaryAccuracy().to("cuda")
+
+    # init f1 macro metric
+    f1_macro = BinaryF1Score(average="macro").to("cuda")
 
     # progress_bar
     progress_bar = tqdm(data_loader)
@@ -73,15 +77,17 @@ def do_one_epoch(
 
         # add to progress bar the accuracy and loss
         binary_accuracy.update(outputs, targets)
+        f1_macro.update(outputs, targets)
         progress_bar.set_postfix(
             loss=loss.item(),
-            accuracy=binary_accuracy.compute().item()
+            accuracy=binary_accuracy.compute().item(),
+            f1=f1_macro.compute().item()
         )
 
         progress_bar.update(1)
 
-    # save the model
-    torch.save(model.state_dict(), f"../trained_agents/sexist_bert_pretrained_a_original_n_e{epoch_num+1}.pt")
+    if save_model:
+        torch.save(model.state_dict(), f"../trained_agents/sexist_bert_pretrained_a_extended_mini_ordered_n_e5.pt")
 
 
 def train(num_epochs: int):
@@ -91,7 +97,7 @@ def train(num_epochs: int):
         batch_size=16,
         shuffle=True,
         seed=42,
-        balance_data_method="none",
+        balance_data_method="duplication",
         task_column_name="label_sexist",
     )
 
@@ -99,7 +105,7 @@ def train(num_epochs: int):
         batch_size=16,
         shuffle=True,
         seed=42,
-        balance_data_method="none",
+        balance_data_method="duplication",
         task_column_name="label_sexist",
     )
 
@@ -119,25 +125,24 @@ def train(num_epochs: int):
     lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.995)
 
     # iterate the epochs
-    for epoch in range(2):
+    for epoch in range(5):
         do_one_epoch(
             model=model,
             data_loader=data_loader_extended,
             optimizer=optimizer,
             loss_function=loss_function,
             tokenizer=tokenizer,
-            epoch_num=epoch
+            epoch_num=epoch,
+            save_model=True,
         )
-        lr_scheduler.step()
-
-    for epoch in range(1):
         do_one_epoch(
             model=model,
             data_loader=data_loader_original,
             optimizer=optimizer,
             loss_function=loss_function,
             tokenizer=tokenizer,
-            epoch_num=epoch
+            epoch_num=epoch,
+            save_model=True,
         )
         lr_scheduler.step()
 

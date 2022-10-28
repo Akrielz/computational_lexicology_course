@@ -122,13 +122,13 @@ def create_sexist_dataset_extended():
 
     # df_list.append(process_original())
     df_list.append(process_csmb())
-    df_list.append(process_exist_test())
-    df_list.append(process_exist_train())
-    df_list.append(process_twitter_analysis_train())
-    df_list.append(process_workplace())
-    df_list.append(process_hate_speech())
-    df_list.append(process_compliments_benevolent())
-    df_list.append(process_compliments_hostile())
+    # df_list.append(process_exist_test())
+    # df_list.append(process_exist_train())
+    # df_list.append(process_twitter_analysis_train())
+    # df_list.append(process_workplace())
+    # df_list.append(process_hate_speech())
+    # df_list.append(process_compliments_benevolent())
+    # df_list.append(process_compliments_hostile())
 
     # concatenate the dataframes
     df = pd.concat(df_list)
