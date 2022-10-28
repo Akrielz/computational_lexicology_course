@@ -27,9 +27,26 @@ def process_csmb():
     return df
 
 
-def process_compliments():
-    # read .../data/compliments/benevolent_sexist.tsv
-    pass
+def process_downloaded_twits(path):
+    # read the saved csv
+    df = pd.read_csv(path)
+
+    # add column with sexist label
+    df["label_sexist"] = "sexist"
+
+    return df
+
+
+def process_compliments_benevolent():
+    return process_downloaded_twits("../data/compliments/benevolent_sexist_downloaded.csv")
+
+
+def process_compliments_hostile():
+    return process_downloaded_twits("../data/compliments/hostile_sexist_downloaded.csv")
+
+
+def process_hate_speech():
+    return process_downloaded_twits("../data/hate_speech/NAACL_SRW_2016_downloaded.csv")
 
 
 def process_exist_test():
@@ -70,10 +87,6 @@ def process_exist_train():
     return df
 
 
-def process_hate_speech():
-    pass
-
-
 def process_twitter_analysis_train():
     # load the original dataset
     df = pd.read_csv("../data/twitter_analysis/train.csv")
@@ -89,6 +102,7 @@ def process_twitter_analysis_train():
 
     return df
 
+
 def process_workplace():
     # load dataset project/data/workplace/ise_sexist_data_labeling.xlsx
     df = pd.read_excel("../data/workplace/ise_sexist_data_labeling.xlsx")
@@ -102,21 +116,22 @@ def process_workplace():
     return df
 
 
-
 def create_sexist_dataset_extended():
     # load the datasets
-    df_original = process_original()
-    df_csmb = process_csmb()
-    df_exist_test = process_exist_test()
-    df_exist_train = process_exist_train()
-    df_twitter_analysis_train = process_twitter_analysis_train()
-    df_workplace = process_workplace()
+    df_list = []
 
-    # create the df list
-    df_list = [df_original, df_csmb, df_exist_test, df_exist_train, df_twitter_analysis_train, df_workplace]
+    # df_list.append(process_original())
+    df_list.append(process_csmb())
+    # df_list.append(process_exist_test())
+    # df_list.append(process_exist_train())
+    # df_list.append(process_twitter_analysis_train())
+    # df_list.append(process_workplace())
+    # df_list.append(process_hate_speech())
+    # df_list.append(process_compliments_benevolent())
+    # df_list.append(process_compliments_hostile())
 
     # concatenate the dataframes
-    df = pd.concat(df_list, ignore_index=True)
+    df = pd.concat(df_list)
 
     # replace any @user with [USER]
     df["text"] = df["text"].str.replace("@\w+", "[USER]", regex=True)
@@ -129,8 +144,9 @@ def create_sexist_dataset_extended():
     # drop duplicates
     df = df.drop_duplicates()
 
-    # keep only the rows with len(text) > 2
+    # drop all rows that are shorter than 2 but no longer than 400
     df = df[df["text"].str.len() > 2]
+    df = df[df["text"].str.len() < 400]
 
     # save the dataframe to csv
     df.to_csv("../data/custom/train_sexist.csv", index=False)

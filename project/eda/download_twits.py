@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 
-def main():
+def main(path):
     # load the ".env" file
     load_dotenv()
 
@@ -21,14 +21,12 @@ def main():
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)
 
-    # read tweet with id 847615527438565376
-    benevolt_path = "../data/compliments/benevolent_sexist.tsv"
-
     # open a dataframe with pandas
-    df = pd.read_csv(benevolt_path, sep="\t")
+    df = pd.read_csv(path, sep="\t")
+    df = df[df["Expert"] == "sexism"]
 
     # get the twitter_ids
-    twitter_ids = df["twitter_id"].unique()
+    twitter_ids = df["TweetID"].unique()
 
     # grab the tweets from the twitter_ids
     tweets = []
@@ -43,9 +41,13 @@ def main():
     df_new = pd.DataFrame(tweets, columns=["text"])
 
     # save the dataframe as csv
-    df_new.to_csv("../data/compliments/benevolent_sexist_tweets_downloaded.csv", index=False)
+    path_csv = path.replace(".csv", "_downloaded.csv")
+    df_new.to_csv(path_csv, index=False)
 
 
 if __name__ == "__main__":
     load_dotenv()
-    main()
+    # main("../data/compliments/benevolent_sexist.tsv")
+    # main("../data/compliments/hostile_sexist.tsv")
+    # main("../data/hate_speech/NAACL_SRW_2016.csv")
+    main("../data/hate_speech/NLP+CSS_2016.csv")
