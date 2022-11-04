@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, List, Union
 
 import numpy as np
 import pandas as pd
@@ -10,7 +10,7 @@ from project.pipeline.balance_data import balance_data_indices_reduction, balanc
 class DataLoader:
     def __init__(
             self,
-            data_path: str = "../data/semeval/train_all_tasks.csv",
+            data_path: Union[List[str], str] = "../data/semeval/train_all_tasks.csv",
             batch_size: int = 4,
             shuffle: bool = False,
             seed: int = 42,
@@ -26,13 +26,36 @@ class DataLoader:
         self.task_column_name = task_column_name
 
         # load data
-        self.df = pd.read_csv(data_path)
+        self.df = self._load_data()
 
         # set seed
         np.random.seed(seed)
 
         # prepare indices
         self.indices = self._prepare_indices()
+
+    def _load_data(self):
+        # check if data_path is a str
+        if isinstance(self.data_path, str):
+            self.data_path = [self.data_path]
+
+        # load the data
+        dfs = []
+        for data_path in self.data_path:
+            df = pd.read_csv(data_path)
+            dfs.append(df)
+
+        # concat the data
+        df = pd.concat(dfs, axis=0)
+
+        # drop all instances without task_column_name
+        if self.task_column_name is not None:
+            df = df.dropna(subset=[self.task_column_name])
+
+        # reset the indices
+        df.reset_index(drop=True, inplace=True)
+
+        return df
 
     def _prepare_indices(self) -> np.ndarray:
         if self.task_column_name is None:
