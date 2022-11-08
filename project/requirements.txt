@@ -15,6 +15,6 @@ textaugment
 nlpaug
 sentencepiece
 sacremoses
-dotenv
+python-dotenv
 tweepy
 openpyxl
