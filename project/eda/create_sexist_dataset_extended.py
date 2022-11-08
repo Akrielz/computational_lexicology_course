@@ -72,7 +72,7 @@ def process_exist_train():
     # load df
     df = pd.read_csv("../data/exist/test/exist_2021_test_labeled.tsv", sep="\t")
 
-    # keep only rows with language in Englsih
+    # keep only rows with language in English
     df = df[df["language"] == "en"]
 
     # keep only text and task1
@@ -116,22 +116,7 @@ def process_workplace():
     return df
 
 
-def create_sexist_dataset_extended():
-    # load the datasets
-    df_list = []
-
-    # df_list.append(process_original())
-    df_list.append(process_csmb())
-    # df_list.append(process_exist_test())
-    # df_list.append(process_exist_train())
-    # df_list.append(process_twitter_analysis_train())
-    # df_list.append(process_workplace())
-    # df_list.append(process_hate_speech())
-    # df_list.append(process_compliments_benevolent())
-    # df_list.append(process_compliments_hostile())
-
-    # concatenate the dataframes
-    df = pd.concat(df_list)
+def clean_df(df):
 
     # replace any @user with [USER]
     df["text"] = df["text"].str.replace("@\w+", "[USER]", regex=True)
@@ -147,6 +132,29 @@ def create_sexist_dataset_extended():
     # drop all rows that are shorter than 2 but no longer than 400
     df = df[df["text"].str.len() > 2]
     df = df[df["text"].str.len() < 400]
+
+    return df
+
+
+def create_sexist_dataset_extended():
+    # load the datasets
+    df_list = []
+
+    df_list.append(process_original())
+    df_list.append(process_csmb())
+    df_list.append(process_exist_test())
+    df_list.append(process_exist_train())
+    # df_list.append(process_twitter_analysis_train())
+    df_list.append(process_workplace())
+    df_list.append(process_hate_speech())
+    # df_list.append(process_compliments_benevolent())
+    df_list.append(process_compliments_hostile())
+
+    # concatenate the dataframes
+    df = pd.concat(df_list)
+
+    # clean the dataframe
+    df = clean_df(df)
 
     # save the dataframe to csv
     df.to_csv("../data/custom/train_sexist.csv", index=False)

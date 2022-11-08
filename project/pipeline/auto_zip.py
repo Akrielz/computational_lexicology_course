@@ -1,7 +1,6 @@
 import os
 
 # get the files from the current directory
-
 dir_path = "../data/semeval/submission_task_a/dev/v2"
 files = os.listdir(dir_path)
 
