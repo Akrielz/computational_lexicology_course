@@ -1,9 +1,7 @@
-from typing import Optional
-
 import numpy as np
 import pandas as pd
 import torch
-from pycaret.classification import compare_models, save_model, setup, predict_model, load_model
+from pycaret.classification import predict_model, load_model
 from tqdm import tqdm
 
 from project.pipeline.classic_tokenizers import get_bert_tokenizer
