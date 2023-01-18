@@ -1,7 +1,7 @@
 import os
 
 # get the files from the current directory
-dir_path = "../data/semeval/submission_task_a/dev/best"
+dir_path = "../data/semeval/submission_task_a/test/"
 files = os.listdir(dir_path)
 
 # remove extension from the files

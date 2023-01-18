@@ -13,13 +13,13 @@ def create_submission():
     tokenizer = get_bert_tokenizer()
 
     # get model
-    model = build_model(model_path="../trained_agents/sexist_bert_pretrained_dual_a_augmented_e_2.pt").cuda()
+    model = build_model(model_path="../trained_agents/sexist_bert_pretrained_dual_a_original.pt").cuda()
     model.eval()
 
     # get the data loader
     data_loader = DataLoader(
         batch_size=16,
-        data_path="../data/semeval/dev_task_a_entries.csv",
+        data_path="../data/semeval/test_task_a_entries.csv",
         shuffle=False,
         task_column_name=None,
     )
@@ -48,7 +48,7 @@ def create_submission():
     df = pd.DataFrame({"rewire_id": rewire_id, "label_pred": predictions})
 
     # save the dataframe
-    df.to_csv("../data/semeval/submission_task_a/dev/v2/sexist_bert_dual_augmented_e2.csv", index=False)
+    df.to_csv("../data/semeval/submission_task_a/test/dual_sexist_bert.csv", index=False)
 
 
 if __name__ == "__main__":
