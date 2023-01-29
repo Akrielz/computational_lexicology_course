@@ -13,7 +13,7 @@ from project.pipeline.data_loader import DataLoader
 
 def build_model(model_path: Optional[str] = None) -> nn.Module:
     # create model
-    model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=5)
+    model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=4)
 
     # load the model
     if model_path is not None:
@@ -24,7 +24,7 @@ def build_model(model_path: Optional[str] = None) -> nn.Module:
 
 
 def get_category(targets: np.ndarray) -> torch.Tensor:
-    categories = [0 if target == "none" else int(target[0]) for target in targets]
+    categories = [int(target[0]) - 1 for target in targets]
     return torch.tensor(categories)
 
 
@@ -46,7 +46,7 @@ def do_one_epoch(
     accuracy = Accuracy().to("cuda")
 
     # init f1 macro metric
-    f1_macro = F1Score(average="macro", num_classes=5).to("cuda")
+    f1_macro = F1Score(average="macro", num_classes=4).to("cuda")
 
     # progress_bar
     progress_bar = tqdm(data_loader)
@@ -111,6 +111,7 @@ def train(num_epochs: int):
         seed=42,
         balance_data_method="duplication",
         task_column_name=task_column_name,
+        exclude_values=["none"]
     )
 
     # create model
@@ -144,4 +145,4 @@ def train(num_epochs: int):
 
 
 if __name__ == "__main__":
-    train(num_epochs=2)
+    train(num_epochs=10)

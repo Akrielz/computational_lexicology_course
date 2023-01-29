@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from project.pipeline.classic_tokenizers import get_bert_tokenizer
 from project.pipeline.data_loader import DataLoader
-from project.task_a.train_sexist_bert_pretrained_dual import build_model
+from project.task_c.sexist_bert_train import build_model
 
 
 def prediction_to_labels(predictions: np.array):
@@ -29,18 +29,17 @@ def prediction_to_labels(predictions: np.array):
     """
 
     category_map = {
-        'none': 0,
-        '1.1 threats of harm': 1,
-        '1.2 incitement and encouragement of harm': 2,
-        '2.1 descriptive attacks': 3,
-        '2.2 aggressive and emotive attacks': 4,
-        '2.3 dehumanising attacks & overt sexual objectification': 5,
-        '3.1 casual use of gendered slurs, profanities, and insults': 6,
-        '3.2 immutable gender differences and gender stereotypes': 7,
-        '3.3 backhanded gendered compliments': 8,
-        '3.4 condescending explanations or unwelcome advice': 9,
-        '4.1 supporting mistreatment of individual women': 10,
-        '4.2 supporting systemic discrimination against women as a group': 11,
+        '1.1 threats of harm': 0,
+        '1.2 incitement and encouragement of harm': 1,
+        '2.1 descriptive attacks': 2,
+        '2.2 aggressive and emotive attacks': 3,
+        '2.3 dehumanising attacks & overt sexual objectification': 4,
+        '3.1 casual use of gendered slurs, profanities, and insults': 5,
+        '3.2 immutable gender differences and gender stereotypes': 6,
+        '3.3 backhanded gendered compliments': 7,
+        '3.4 condescending explanations or unwelcome advice': 8,
+        '4.1 supporting mistreatment of individual women': 9,
+        '4.2 supporting systemic discrimination against women as a group': 10,
     }
 
     inverse_category_map = {v: k for k, v in category_map.items()}
@@ -52,14 +51,17 @@ def create_submission():
     # get tokenizer
     tokenizer = get_bert_tokenizer()
 
+    epoch = 0
+    mode = "test"
+
     # get model
-    model = build_model(model_path="../trained_agents/sexist_bert_pretrained_c_e_0.pt").cuda()
+    model = build_model(model_path=f"../trained_agents/sexist_bert_pretrained_c_e_{epoch}.pt").cuda()
     model.eval()
 
     # get the data loader
     data_loader = DataLoader(
         batch_size=16,
-        data_path="../data/semeval/test_task_c_entries.csv",
+        data_path=f"../data/semeval/{mode}_task_c_entries.csv",
         shuffle=False,
         task_column_name=None,
     )
@@ -88,7 +90,7 @@ def create_submission():
     df = pd.DataFrame({"rewire_id": rewire_id, "label_pred": predictions})
 
     # save the dataframe
-    df.to_csv("../data/semeval/submission_task_c/test/sexist_bert_e_0.csv", index=False)
+    df.to_csv(f"../data/semeval/submission_task_c/{mode}/sexist_bert_e_{epoch}.csv", index=False)
 
 
 if __name__ == "__main__":

@@ -16,6 +16,7 @@ class DataLoader:
             seed: int = 42,
             balance_data_method: Literal["reduction", "duplication", "none"] = "none",
             task_column_name: Optional[str] = "label_sexist",
+            exclude_values: List[str] = None,
     ):
         # save vars
         self.data_path = data_path
@@ -24,9 +25,19 @@ class DataLoader:
         self.seed = seed
         self.balance_data_method = balance_data_method
         self.task_column_name = task_column_name
+        self.exclude_values = exclude_values
+
+        # if exclude_values is not None, set it to []
+        if self.exclude_values is None:
+            self.exclude_values = []
 
         # load data
         self.df = self._load_data()
+
+        # Remove all the values from the exclude_values list
+        if self.exclude_values:
+            self.df = self.df[~self.df[self.task_column_name].isin(self.exclude_values)]
+            self.df.reset_index(drop=True, inplace=True)
 
         # set seed
         np.random.seed(seed)

@@ -13,7 +13,7 @@ from project.pipeline.data_loader import DataLoader
 
 def build_model(model_path: Optional[str] = None) -> nn.Module:
     # create model
-    model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=12)
+    model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=11)
 
     # load the model
     if model_path is not None:
@@ -44,18 +44,17 @@ def get_category(targets: np.ndarray) -> torch.Tensor:
     """
 
     category_map = {
-        'none': 0,
-        '1.1 threats of harm': 1,
-        '1.2 incitement and encouragement of harm': 2,
-        '2.1 descriptive attacks': 3,
-        '2.2 aggressive and emotive attacks': 4,
-        '2.3 dehumanising attacks & overt sexual objectification': 5,
-        '3.1 casual use of gendered slurs, profanities, and insults': 6,
-        '3.2 immutable gender differences and gender stereotypes': 7,
-        '3.3 backhanded gendered compliments': 8,
-        '3.4 condescending explanations or unwelcome advice': 9,
-        '4.1 supporting mistreatment of individual women': 10,
-        '4.2 supporting systemic discrimination against women as a group': 11,
+        '1.1 threats of harm': 0,
+        '1.2 incitement and encouragement of harm': 1,
+        '2.1 descriptive attacks': 2,
+        '2.2 aggressive and emotive attacks': 3,
+        '2.3 dehumanising attacks & overt sexual objectification': 4,
+        '3.1 casual use of gendered slurs, profanities, and insults': 5,
+        '3.2 immutable gender differences and gender stereotypes': 6,
+        '3.3 backhanded gendered compliments': 7,
+        '3.4 condescending explanations or unwelcome advice': 8,
+        '4.1 supporting mistreatment of individual women': 9,
+        '4.2 supporting systemic discrimination against women as a group': 10,
     }
 
     targets = [category_map[category] for category in targets]
@@ -82,7 +81,7 @@ def do_one_epoch(
     accuracy = Accuracy().to("cuda")
 
     # init f1 macro metric
-    f1_macro = F1Score(average="macro", num_classes=5).to("cuda")
+    f1_macro = F1Score(average="macro", num_classes=11).to("cuda")
 
     # progress_bar
     progress_bar = tqdm(data_loader)
@@ -131,7 +130,7 @@ def do_one_epoch(
         progress_bar.update(1)
 
     if save_model:
-        torch.save(model.state_dict(), f"../trained_agents/sexist_bert_pretrained_b_e_{epoch_num}.pt")
+        torch.save(model.state_dict(), f"../trained_agents/sexist_bert_pretrained_c_e_{epoch_num}.pt")
 
 
 def train(num_epochs: int):
@@ -147,6 +146,7 @@ def train(num_epochs: int):
         seed=42,
         balance_data_method="duplication",
         task_column_name=task_column_name,
+        exclude_values=["none"],
     )
 
     # create model
@@ -180,4 +180,4 @@ def train(num_epochs: int):
 
 
 if __name__ == "__main__":
-    train(num_epochs=2)
+    train(num_epochs=10)
