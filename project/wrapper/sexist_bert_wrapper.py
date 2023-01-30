@@ -2,6 +2,7 @@ from typing import Literal, List, Union
 
 import numpy as np
 import torch
+from googletrans import Translator
 
 from project.pipeline.classic_tokenizers import get_bert_tokenizer
 from project.wrapper.info import CHECKPOINT_PATHS, BUILD_MODEL, INVERSE_MAPPING
@@ -13,17 +14,30 @@ class SexistBert:
             model_type: Literal["binary", "category", "specific"],
             device: torch.device = "cpu",
             batch_size: int = 32,
+            language: Literal["other", "en"] = "en"
     ):
         # Save data
         self.model_type = model_type
         self.device = device
         self.batch_size = batch_size
+        self.language = language
 
         # Load tokenizer
         self.tokenizer = get_bert_tokenizer()
 
         # Load model
         self._load_models()
+
+        # Load a translator
+        self.translator = Translator() if language == "other" else None
+
+    def _translate_to_english(self, text: List[str]) -> List[str]:
+        # Translate to English
+        translated_text = []
+        for t in text:
+            translated_text.append(self.translator.translate(t, src="auto", dest="en").text)
+
+        return translated_text
 
     def _load_models(self):
         binary_model_path = CHECKPOINT_PATHS["binary"]
@@ -74,6 +88,9 @@ class SexistBert:
         if type(text) == str:
             text = [text]
 
+        if self.language == "other":
+            text = self._translate_to_english(text)
+
         assert len(text) > 0, "The text must be a non-empty string or a list of non-empty strings."
 
         # Apply the binary model
@@ -102,7 +119,11 @@ class SexistBert:
 
         return final_predictions
 
+    def __call__(self, text: Union[str, List[str]]):
+        return self.predict(text)
+
 
 if __name__ == "__main__":
-    sexist_bert = SexistBert("specific", batch_size=2)
-    print(sexist_bert.predict(["hello world!", "women are the worst", "all women should die!", "hello world 2!"]))
+    sexist_bert = SexistBert("specific", batch_size=2, language="other")
+    # print(sexist_bert.predict(["hello world!", "women are the worst", "all women should die!", "hello world 2!"]))
+    print(sexist_bert.predict(["buna lume!", "femeile sunt proaste", "toate femeile ar trebui sa moara", "buna lume 2!"]))
