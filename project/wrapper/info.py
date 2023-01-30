@@ -13,7 +13,7 @@ def no_warnings_wrapper(func):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             res = func(*args, **kwargs)
-            logging.set_verbosity_info()
+            logging.set_verbosity_warning()
             return res
 
     return wrapper
