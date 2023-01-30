@@ -94,7 +94,7 @@ def do_one_epoch(
 def train(num_epochs: int):
     # get the data loader
     data_loader_extended = DataLoader(
-        data_path= [
+        data_path=[
             "../data/custom/train_sexist.csv",
             "../data/custom/train_sexist_augmented_0.csv",
             "../data/custom/train_sexist_augmented_1.csv",
