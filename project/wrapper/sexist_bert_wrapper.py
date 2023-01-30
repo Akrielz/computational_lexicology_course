@@ -126,4 +126,4 @@ class SexistBert:
 if __name__ == "__main__":
     sexist_bert = SexistBert("specific", batch_size=2, language="other")
     # print(sexist_bert.predict(["hello world!", "women are the worst", "all women should die!", "hello world 2!"]))
-    print(sexist_bert.predict(["buna lume!", "femeile sunt proaste", "toate femeile ar trebui sa moara", "buna lume 2!"]))
+    print(sexist_bert(["buna lume!", "femeile sunt proaste", "toate femeile ar trebui sa moara", "buna lume 2!"]))
