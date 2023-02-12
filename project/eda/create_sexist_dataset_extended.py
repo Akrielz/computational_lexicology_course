@@ -70,7 +70,7 @@ def process_exist_test():
 
 def process_exist_train():
     # load df
-    df = pd.read_csv("../data/exist/test/exist_2021_test_labeled.tsv", sep="\t")
+    df = pd.read_csv("../data/exist/training/exist_2021_training.tsv", sep="\t")
 
     # keep only rows with language in English
     df = df[df["language"] == "en"]
@@ -157,7 +157,7 @@ def create_sexist_dataset_extended():
     df = clean_df(df)
 
     # save the dataframe to csv
-    df.to_csv("../data/custom/train_sexist.csv", index=False)
+    # df.to_csv("../data/custom/train_sexist.csv", index=False)
 
 
 if __name__ == "__main__":
